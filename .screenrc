@@ -1,0 +1,126 @@
+# suggested binding for emacs users (ctrl-singlequote is not a typical
+# emacs binding that will clash on consoles)
+
+# use ctrl-w instead of control-a, since I like control-a for popping to front of line.
+#escape ^Ww
+
+
+# VARIABLES
+# ===============================================================
+
+# Don't display the copyright page
+  startup_message off			# default: on
+
+# Change default scrollback value for new windows
+  defscrollback 4096			# default: 100
+
+# shell:  Default process started in screen's windows.
+# Makes it possible to use a different shell inside screen
+# than is set as the default login shell.
+# If begins with a '-' character, the shell will be started as a login shell.
+  shell -$SHELL
+
+# No annoying visual bell
+  vbell off
+
+# Uses nethack-style messages
+  nethack on				# default: off
+
+# Affects the copying of text regions
+  crlf off				# default: off
+
+# Useful captioning
+#  caption always "%3n %t%? @%u%? [%h]%? %=%Y.%m.%d %c:%s"
+# ===========================================
+# CAPTION - shows a "caption" for the window.
+# ===========================================
+# a "caption" is another line which can show information -
+# in addition to the hardstatus line.
+#
+# use caption to show window list:
+# caption always "%{= kc}%?%-Lw%?%{= kY}%n*%f %t%?(%u)%?%{= kc}%?%+Lw%?"
+#
+# caption always '%{= wb}%50=%n%f %t%{= wb}'
+# this basically just shows the current window number and title
+# on its own; the "%50=" displays it in the middle of the line.
+#
+# "push right border: current time with seconds and current date"
+# caption always "%=%c:%s %Y-%m-%d"
+#
+# caption always "%>%{wk}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%?%<"
+# caption always "%-Lw%{= BW}%50>%n%f* %t%{-}%+Lw%<"
+# caption always "%?%F%{.RW}%?%3n %t%? [%h]%?"
+# caption always "%{rk}%H %{gk}%c %{yk}%M%d %{wk}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%?"
+# caption always "%{kG}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{kG}%?%+Lw%?"
+# caption always "%{rk}%H %{gk}%c %{yk}%M%d %{wk}%?%-Lw% ?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%?"
+# caption always "%{rk}%H%{gk} | %c %{yk}%d.%m.%Y | %?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%? | %{rk} Load: %l %{wk}"
+# caption always "%{=}%{+b kR}%H %{+b kY}%M %d %{+b kG}%0c %{+b kB}%?%-Lw%?  |  %{+b kW}%n*%f %kt%?(%u)%?%{+bkB}%?%+Lw%? | %{kR} Load: %l %{kB}"
+# caption always "%{=}%{+b kR}%H %{+b kY}%M %d %{+b kG}%0c %{+b kB}%?%-Lw%?%{+b kW}%n*%f %kt%?(%u)%?%{+bkB}%?%+Lw%? | %{kR} Load: %l %{kB}"
+# caption always '%{-b}%{= wb}%-Lw%{= wr}%{+b}%n%f %t%{= wb}%{-b}%+Lw %{= wr} %=%c %Y-%m-%d'
+# caption always "%{+b rk}%H%{gk} |%c %{yk}%d.%m.%Y | %{rw}%n%f %t %{bk} | %?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%? | %{rk} Load: %l %{wk}"
+#
+#caption always "%{-b bc}%C|%D|%M %d|%H%{+u wb} %L=%-Lw%45>%{+b by}%n%f* %t%{-}%+Lw%-0<"
+# For reference.  Does interesting things with %?%F%:%? .
+#caption always "%{=b}%?%F%:%45=%n*%f %t%?%?%F%{r}%:%{s kk}%?%H%?%F%{-}%? %L=%-Lw%45L>%?%F%{g}%?%n*%f %t%?%F%{-}%?%+Lw%-17= %?%F%{y}%?%c %Y-%m-%d%?"
+
+
+ caption always "%{= kw} %H | %{kc}%?%-w%?%{kY}%n*%f %t%?(%u)%?%{= kc}%?%+w%? %=|%{kW} %l %{kw}| %{kc}%{-b}%D, %m/%d/%Y |%{kW}%{+b}%c:%s %{wk}" 
+
+
+termcapinfo xterm* 'hs:ts=\E]0;:fs=\007:ds=\E]0;\007'
+defhstatus "screen ^E (^Et) | $USER@^EH"
+hardstatus off
+
+# ===============================
+# Hardstatus Line and sorendition
+# ===============================
+# Previous version:
+#hardstatus alwayslastline "| [%{r}%n %t%{d.}] %W | [%l] | [%0c] | [%Y-%m-%d] |"
+# Taken from a post by jdub to slug and modified.
+# hardstatus on
+# hardstatus alwayslastline
+# hardstatus string "%{.bW}%-w%{.rW}%n %t%{-}%+w %=%{..G} [%H]  [%l] %{..Y} %Y-%m-%d %c"
+
+#hardstatus alwayslastline "%{=b}%{G} Screens: %{b}%w %=%{kg}%C%A  %D, %M/%d/%Y "
+
+# hardstatus: Always show the window list in the last line:
+# hardstatus alwayslastline "%w"
+# hardstatus alwayslastline "%H %w"
+#
+# use 'L' between '%' and 'w' to show the flags, too1
+# hardstatus alwayslastline "%H %Lw"
+#
+# example by Adam Spiers <gnu-screen@adamspiers.org> :
+# *without* colors: 
+# hardstatus alwayslastline "%?%-Lw%?%n*%f %t%?(%u)%?%?%+Lw%?"
+# *with* colors:
+# hardstatus alwayslastline "%?%{yk}%-Lw%?%{wb}%n*%f %t%?(%u)%?%?%{yk}%+Lw%?"
+#
+# This will show the current time and today's date in YYmmdd, too:
+# hardstatus alwayslastline " %c | %Y%m%d |  %w"
+#
+# This will show today's date in mmdd and the current time, too:
+# hardstatus alwayslastline " %m%d %c |  %w"
+#
+# combining all of these gives:
+# hardstatus alwayslastline "%{rw}%H%{wk}|%c|%M%d|%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%?"
+#
+# this uses a black background foreverything execpt for
+# the current window which is show on a white background.
+# hostname in red, clock in green, date in yellow:
+# hardstatus alwayslastline "%{rk}%H %{gk}%c %{yk}%M%d %{wk}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%?"
+#
+# no "host:", "date:", or "time:" here.
+# instead, the info gets placed at 16%, 50%, and 80% so that it is
+# placed soemwhat in the middle of each of the three panels.
+# hardstatus alwayslastline "%{RY}%16=%H %33=%{YR}%50=%M%d %66=%{Gb}%80=%c%="
+#
+# hardstatus alwayslastline "%{rk}%H %{gk}%c %{yk}%M%d %{wr} Load: %l %{wb} %w %{wk}%?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%?"
+# hardstatus alwayslastline " [ %H ] %{wb} %c:%s | %d.%m.%Y %{wr} Load: %l %{wb} %w "
+# hardstatus alwayslastline " %H %{wb} %c:%s | %d.%m.%Y %{wr} Load: %l %{wk} %w "
+# hardstatus alwayslastline "%{rk}%H%{gk} | %c %{yk}%d.%m.%Y | %{rk} Load: %l %{wk} | %?%-Lw%?%{bw}%n*%f %t%?(%u)%?%{wk}%?%+Lw%?"
+# hardstatus alwayslastline "%{rk}host: %H %33=%{yk}date: %M%d %66=%{gk}time: %c:%s%="
+# hardstatus alwayslastline "%{rk}host: %H %33=%{yk}date: %M%d %66=%{gk}time: %c%="
+# 
+
+

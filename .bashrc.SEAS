@@ -1,0 +1,88 @@
+#-----------------------------------
+#
+#  Setup stuff you want for every shell,
+#   including scripts
+#
+#-----------------------------------
+
+
+#-----------------------------------
+# Source global definitions (if any)
+#-----------------------------------
+
+if [ -f /etc/bashrc ]; then
+        . /etc/bashrc   # --> Read /etc/bashrc, if present.
+fi
+
+if [ -f /etc/bash.bashrc ]; then
+        . /etc/bash.bashrc   # --> Read /etc/bash.bashrc, if present.
+fi
+
+
+
+#------------------------------------
+#
+#  Environment variables
+#
+#------------------------------------
+
+#
+# Make sure that our local bin dir precerdes others
+#
+PATH=~/usr/bin:$PATH
+export PATH
+#
+# Grid software tree 
+#
+#TREE_ROOT=/group/grid/tree
+#ARCH=`/bin/uname -m`
+#TREE=$TREE_ROOT/arch/linux-i686
+#if [ "x86_64" = "$ARCH" ]; then
+#    TREE=$TREE_ROOT/arch/linux-x86_64
+#fi
+
+
+#
+# C3
+#
+#export C3_USER=root
+#export C3_CONF=~/.c3.conf
+#export PATH="$PATH:/opt/c3-4/"
+
+#
+# Globus stuff
+#
+#GPT_LOCATION=/opt/grid/globus
+#GLOBUS_LOCATION=/opt/grid/globus
+
+#MYPROXY_SERVER=security.grid.deas.harvard.edu
+#export GPT_LOCATION GLOBUS_LOCATION GLOBUS_IODBC_PATH ODBCINI MYPROXY_SERVER
+
+
+
+#---------------------------------------
+#
+#  PATHS
+#
+#--------------------------------------
+
+#export LD_LIBRARY_PATH=$GLOBUS_LOCATION/lib:/deas/vendor/lib:/deas/software/lib:.
+#export PATH=$JAVA_HOME/bin:$PATH:~/bin:~/usr/bin:/usr/local/bin:/deas/vendor/bin:/deas/software/bin:/deas/software/sbin:$GLOBUS_LOCATION/bin:$GLOBUS_LOCATION/sbin:/sw/bin:/sw/sbin
+#export NLSPATH=/deas/vendor/lib/ifcore_msg.cat:$NLSPATH
+
+
+#-------------------------------------------
+#
+#  Use our own ssh-agent stuff from keychain
+#
+#--------------------------------------------
+
+if [ -f ~/.keychain/${HOSTNAME}-sh  ]; then 
+   source ~/.keychain/${HOSTNAME}-sh
+fi
+   
+
+#module load compilers/intel/9.1 mpi/openmpi/1.2.4/intel9
+if [ -d /opt/modules ]; then 
+   module load null compilers/intel/9.1 mpi/mpich/1.2.7p1/intel9
+fi
