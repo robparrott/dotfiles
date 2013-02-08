@@ -51,7 +51,7 @@ _init_setup_path () {
   #
   # Make sure that our local bin dir precedes others
   #
-  PATH=~/usr/bin~/bin::$PATH
+  PATH=~/usr/bin:~/bin::$PATH
 
   export PATH
 
