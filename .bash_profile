@@ -23,9 +23,22 @@ fi
 #-------------------------------------------------------------
 _init_run_screen () {
 
-  TTY=`/usr/bin/tty`
-  if [ "$TTY" != "not a tty" -a "$TERM" != "screen" -a "$SHLVL" -eq 1 -a -n "$SSH_CLIENT" ]; then
-    screen -t `hostname` -x -RR remote
+  TTY=$( /usr/bin/tty )
+  TMUX=$( which tmux )
+  SCREEN=$( which screen )
+ 
+  if [ "$TTY"  != "not a tty" -a \
+       "$TERM" != "screen" -a \
+       "$SHLVL" -eq 1 ] 
+#       -a -n "$SSH_CLIENT"  ] 
+   then
+
+    if [ -x "$(which tmux)" ]; then
+       tmux attach || tmux
+    elif [ -x "$(which screen)" ]; then
+       screen -t `hostname` -x -RR remote
+    fi
+
   fi
 
 }
@@ -34,13 +47,12 @@ _init_run_screen () {
 # Setup EDITOR 
 #------------------------------
 _init_setup_editor () {
-  if [ -x /usr/bin/editor ]; then
-    EDITOR=editor
-  elif [ -x /usr/bin/xemacs ]; then
+
+  if   [ -x "$(which xemacs)" ]; then
     EDITOR=xemacs
-  elif [ -x /usr/bin/emacs ]; then
+  elif [ -x "$(which emacs)"  ]; then
     EDITOR=emacs
-  elif [ -x /usr/bin/vim ]; then
+  elif [ -x "$(which vim)"    ]; then
     EDITOR=vim
   else
     EDITOR=vi
@@ -134,7 +146,7 @@ _init_bash_settings () {
   #set -o xtrace          # useful for debuging
 
   # Enable options:
-  shopt -s cdspell                         # check spelling on directory changes
+#  shopt -s cdspell                         # check spelling on directory changes
   shopt -s cdable_vars
   shopt -s checkhash
   shopt -s checkwinsize                    # Make bash check it's window size after a process completes
@@ -203,7 +215,7 @@ _init_set_prompt () {
   PS1='\h:\w \u\$ '
 
   PROMPT="\u@\h \W> "
-#  PS1=$PROMPT
+  PS1=$PROMPT
 
 }
 
