@@ -40,7 +40,7 @@
  "-Misc-Fixed-Medium-R-Normal--15-140-75-75-C-90-ISO8859-1")
 
 ;; display the current time
-;(display-time)
+(display-time)
 
 ;; Show column number at bottom of screen
 (column-number-mode 1)
@@ -79,11 +79,36 @@
 ;; in console)
 (menu-bar-mode (if window-system 1 -1))
 
+;; replace highlighted text with what I type rather than just
+;; inserting at a point
+(delete-selection-mode t) 
+
+
 ;; -------------------------------------------
 ;; The new emacs 21 toolbar sucks 
 ;; -------------------------------------------
-(tool-bar-mode 0)
+;;(tool-bar-mode 0)
 
-;; replace highlighted text with what I type rather than just
-;; inserting at a point
-(delete-selection-mode t)
+;;
+;; Your own LISP dirs
+;;
+(add-to-list 'load-path "~/.emacs.d/")
+(add-to-list 'load-path "~/.emacs.d/color-theme-6.6.0/")
+
+(require 'color-theme)
+(color-theme-initialize)
+(load-file "~/.emacs.d/color-theme-twilight.el")
+
+;;
+;; Setup YAML mode
+;;
+(require 'yaml-mode)
+(add-to-list 'auto-mode-alist '("\\.yml$" . yaml-mode))
+(add-to-list 'auto-mode-alist '("\\.yaml$" . yaml-mode))   
+
+;;
+;; Markdown mode
+;;
+(require 'markdown-mode)
+;;(autoload 'markdown-mode "markdown-mode" "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.md$" . markdown-mode))
