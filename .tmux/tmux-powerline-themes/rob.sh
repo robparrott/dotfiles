@@ -51,10 +51,10 @@ if [ -z $TMUX_POWERLINE_RIGHT_STATUS_SEGMENTS ]; then
 #		"weather 37 234" \
 		#"xkb_layout 125 117" \
                 "lan_ip 24 255 ${TMUX_POWERLINE_SEPARATOR_LEFT_BOLD}" \
-                "wan_ip 24 255" \
-		"date_day 18 255" \
-		"date 18 255 ${TMUX_POWERLINE_SEPARATOR_LEFT_THIN}" \
-		"time 18 255 ${TMUX_POWERLINE_SEPARATOR_LEFT_THIN}" \
+                "wan_ip 24 255 ${TMUX_POWERLINE_SEPARATOR_LEFT_BOLD}" \
+#		"date_day 18 255" \
+#		"date 18 255 ${TMUX_POWERLINE_SEPARATOR_LEFT_THIN}" \
+		"time 18 255 ${TMUX_POWERLINE_SEPARATOR_LEFT_BOLD}" \
 		#"utc_time 235 136 ${TMUX_POWERLINE_SEPARATOR_LEFT_THIN}" \
 	)
 fi
