@@ -12,7 +12,6 @@ DOTFILES=(
     .emacs.d
     .gitignore
     .screenrc
-    .tmux
     .tmux.conf
     .zprofile
     .zshrc
@@ -121,6 +120,16 @@ link_dotfiles() {
             warning "Skipping $f (not in repo)"
         fi
     done
+
+    # Link bin/ scripts into ~/bin
+    if [[ -d "$DOTFILES_DIR/bin" ]]; then
+        mkdir -p "$HOME/bin"
+        for script in "$DOTFILES_DIR/bin/"*; do
+            local name
+            name="$(basename "$script")"
+            backup_and_link "$script" "$HOME/bin/$name"
+        done
+    fi
 }
 
 # ── 5. Platform-specific setup ────────────────────────────────────────────────
