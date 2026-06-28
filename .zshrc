@@ -2,7 +2,10 @@
 # HOMEBREW
 # =============================================================================
 
-eval "$(/opt/homebrew/bin/brew shellenv zsh)"
+for _brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    [[ -x "$_brew" ]] && eval "$($_brew shellenv zsh)" && break
+done
+unset _brew
 
 # =============================================================================
 # PATH
