@@ -30,6 +30,6 @@ while IFS= read -r session; do
     prev_bg="$bg"
 done < <(tmux list-sessions -F '#S' 2>/dev/null)
 
-output+="#[fg=${prev_bg},bg=${BAR_BG},nobold]${WEDGE}"
+output+="#[fg=${prev_bg},bg=${BAR_BG},nobold]"
 
 printf '%s' "$output"
