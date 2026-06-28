@@ -20,7 +20,11 @@ for i in "${!sessions[@]}"; do
     next="${sessions[$(( i+1 ))]}"; 
     if [[ -n "$next" ]]; then
         [[ "$next" == "$ACTIVE" ]] && next_bg="$ACTIVE_BG" || next_bg="$INACTIVE_BG"
-    else next_bg="$BAR_BG"; fi
+    else
+        # Use active window bg if first window is active, else inactive bg
+        first_active=$(tmux list-windows -F "#{window_index} #{window_active}" | awk "\$1==1{print \$2}")
+        [[ "$first_active" == "1" ]] && next_bg="colour31" || next_bg="colour24"
+    fi
     output+="#[fg=${fg},bg=${bg},bold] ${session} #[fg=${bg},bg=${next_bg},nobold]"
 done
 
