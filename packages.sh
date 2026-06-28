@@ -28,6 +28,9 @@ BREW_FORMULAE=(
     whois
     gettext
 
+    # Editors
+    emacs
+
     # Languages & runtimes
     python@3.14
 
@@ -122,6 +125,9 @@ APT_PACKAGES=(
     ca-certificates
     openssl
 
+    # Editors
+    emacs
+
     # Languages
     python3
     python3-pip
@@ -158,6 +164,7 @@ DNF_PACKAGES=(
     git
     ca-certificates
     openssl
+    emacs
     python3
     python3-pip
 )
