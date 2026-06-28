@@ -1,0 +1,51 @@
+# Starship config for tmux status bar only
+# No color (stripped by tmux-starship), no character prompt symbol
+
+format = """$git_branch$git_status$kubernetes$aws$battery$time"""
+
+[git_branch]
+symbol = " "
+format = "[$symbol$branch]($style) "
+style = "bold purple"
+
+[git_status]
+format = '([$all_status$ahead_behind]($style) )'
+style = "bold red"
+ahead = "⇡${count}"
+behind = "⇣${count}"
+modified = "!${count}"
+staged = "+${count}"
+untracked = "?${count}"
+
+[kubernetes]
+disabled = false
+format = '[⎈ $context]($style) '
+style = "bold blue"
+
+[aws]
+format = '[ $profile]($style) '
+style = "bold yellow"
+
+[battery]
+format = "[$symbol$percentage]($style) "
+[[battery.display]]
+threshold = 20
+style = "bold red"
+[[battery.display]]
+threshold = 50
+style = "bold yellow"
+
+[time]
+disabled = false
+format = "[$time]($style)"
+time_format = "%Y-%m-%d %H:%M"
+style = "bold white"
+
+[character]
+disabled = true
+
+[directory]
+disabled = true
+
+[python]
+disabled = true
