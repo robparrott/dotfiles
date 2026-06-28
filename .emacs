@@ -91,12 +91,12 @@
 ;;
 ;; Your own LISP dirs
 ;;
-(add-to-list 'load-path "~/.emacs.d/")
-(add-to-list 'load-path "~/.emacs.d/color-theme-6.6.0/")
+(add-to-list 'load-path "~/.emacs.d/lisp/")
+(add-to-list 'load-path "~/.emacs.d/lisp/color-theme-6.6.0/")
 
 (require 'color-theme)
 (color-theme-initialize)
-(load-file "~/.emacs.d/color-theme-twilight.el")
+(load-file "~/.emacs.d/lisp/color-theme-twilight.el")
 
 ;;
 ;; Setup YAML mode
