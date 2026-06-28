@@ -1,5 +1,6 @@
-# Starship config — used for both shell prompt and tmux status bar
+# Starship config
 
+# Single-line prompt: dir > git > context > char
 format = """
 $directory\
 $git_branch\
@@ -7,13 +8,10 @@ $git_status\
 $python\
 $kubernetes\
 $aws\
-$battery\
-$time\
-$line_break\
 $character"""
 
 # =============================================================================
-# PROMPT MODULES
+# MODULES
 # =============================================================================
 
 [directory]
@@ -46,24 +44,14 @@ symbol = "⎈ "
 [aws]
 symbol = " "
 style = "bold yellow"
-# Only show when profile is non-default
 format = '[$symbol($profile)(\($region\))]($style) '
-
-[battery]
-disabled = false
-[[battery.display]]
-threshold = 20
-style = "bold red"
-[[battery.display]]
-threshold = 50
-style = "bold yellow"
-
-[time]
-disabled = false
-format = "[$time]($style) "
-time_format = "%Y-%m-%d %H:%M"
-style = "bold white"
 
 [character]
 success_symbol = "[❯](bold green)"
 error_symbol = "[❯](bold red)"
+
+[battery]
+disabled = true
+
+[time]
+disabled = true
