@@ -2,7 +2,7 @@
 # Configure iTerm2 via a Dynamic Profile — picked up live, no restart needed.
 # Sets a Nerd Font so tmux-powerline glyphs render correctly.
 
-FONT="${1:-JetBrainsMono Nerd Font Mono}"
+FONT="${1:-JetBrainsMonoNerdFontMono-Regular}"
 FONT_SIZE="${2:-13}"
 PROFILE_DIR="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
 PROFILE_FILE="$PROFILE_DIR/dotfiles.json"
@@ -37,4 +37,8 @@ EOF
 
 echo "[iterm2] ✓ Dynamic profile written to $PROFILE_FILE"
 echo "[iterm2]   Font: $FONT $FONT_SIZE"
-echo "[iterm2]   In iTerm2: Profiles > dotfiles to activate, or set as default."
+
+# Set as the default profile by writing the GUID to iTerm2 preferences
+defaults write com.googlecode.iterm2 "Default Bookmark Guid" "dotfiles-dynamic-profile"
+echo "[iterm2] ✓ Set as default profile (new windows will use it)"
+echo "[iterm2]   To apply to existing windows: Profiles > dotfiles > Set as Default"
