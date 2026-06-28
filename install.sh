@@ -153,6 +153,12 @@ EOF
     elif [[ "$(uname)" == "Linux" ]]; then
         info "Linux detected"
     fi
+
+    # iTerm2 Nerd Font dynamic profile
+    local iterm_setup="$DOTFILES_DIR/bin/setup-iterm2.sh"
+    if [[ -x "$iterm_setup" ]]; then
+        bash "$iterm_setup" || warning "iTerm2 profile setup failed (non-fatal)"
+    fi
 }
 
 # ── 6. Optionally install packages ────────────────────────────────────────────

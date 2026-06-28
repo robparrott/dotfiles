@@ -43,6 +43,9 @@ BREW_FORMULAE=(
 )
 
 BREW_CASKS=(
+    # Fonts (needed for tmux-powerline glyphs)
+    font-jetbrains-mono-nerd-font
+
     # Productivity & utilities
     1password
     1password-cli
