@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 
 # =============================================================================
 # packages.sh — Install common packages across macOS and Linux
@@ -15,7 +15,10 @@ DRY_RUN=false
 info()    { echo "[packages] $*"; }
 success() { echo "[packages] ✓ $*"; }
 warning() { echo "[packages] ! $*"; }
+error()   { echo "[packages] ✗ $*" >&2; }
 skip()    { echo "[packages] - (dry-run) would install: $*"; }
+
+FAILED=()
 
 # ── macOS / Homebrew ──────────────────────────────────────────────────────────
 
@@ -94,7 +97,12 @@ install_brew_packages() {
             info "$pkg already installed"
         else
             info "Installing $pkg..."
-            brew install "$pkg" && success "$pkg"
+            if brew install "$pkg"; then
+                success "$pkg"
+            else
+                error "$pkg failed — continuing"
+                FAILED+=("$pkg")
+            fi
         fi
     done
 
@@ -106,7 +114,12 @@ install_brew_packages() {
             info "$cask already installed"
         else
             info "Installing $cask..."
-            brew install --cask "$cask" && success "$cask"
+            if brew install --cask "$cask"; then
+                success "$cask"
+            else
+                error "$cask failed — continuing"
+                FAILED+=("$cask")
+            fi
         fi
     done
 }
@@ -121,16 +134,16 @@ APT_PACKAGES=(
     wget
     git
 
-    # Security & networking
-    ca-certificates
-    openssl
-
     # Editors
     emacs
 
     # Languages
     python3
     python3-pip
+
+    # Security & networking
+    ca-certificates
+    openssl
 )
 
 install_apt_packages() {
@@ -149,7 +162,12 @@ install_apt_packages() {
             info "$pkg already installed"
         else
             info "Installing $pkg..."
-            sudo apt-get install -y "$pkg" && success "$pkg"
+            if sudo apt-get install -y "$pkg"; then
+                success "$pkg"
+            else
+                error "$pkg failed — continuing"
+                FAILED+=("$pkg")
+            fi
         fi
     done
 }
@@ -182,7 +200,12 @@ install_dnf_packages() {
             info "$pkg already installed"
         else
             info "Installing $pkg..."
-            sudo dnf install -y "$pkg" && success "$pkg"
+            if sudo dnf install -y "$pkg"; then
+                success "$pkg"
+            else
+                error "$pkg failed — continuing"
+                FAILED+=("$pkg")
+            fi
         fi
     done
 }
@@ -212,5 +235,13 @@ case "$(uname)" in
         exit 1
         ;;
 esac
+
+if [[ ${#FAILED[@]} -gt 0 ]]; then
+    error "The following packages failed to install:"
+    for pkg in "${FAILED[@]}"; do
+        error "  - $pkg"
+    done
+    exit 1
+fi
 
 success "All done."
