@@ -1,51 +1,108 @@
-# Starship config for tmux status bar only
-# No color (stripped by tmux-starship), no character prompt symbol
+# Starship config for tmux status bar — catppuccin powerline style
+# Used by tmux status-right via tmux-starship helper
 
-format = """$git_branch$git_status$kubernetes$aws$battery$time"""
+"$schema" = 'https://starship.rs/config-schema.json'
+
+format = """\
+[](peach)\
+$directory\
+[](bg:yellow fg:peach)\
+$git_branch\
+$git_status\
+[](fg:yellow bg:green)\
+$python\
+$nodejs\
+$golang\
+$rust\
+[](fg:green bg:sapphire)\
+$kubernetes\
+$aws\
+[](fg:sapphire bg:lavender)\
+$time\
+[ ](fg:lavender)"""
+
+palette = 'catppuccin_mocha'
+
+[directory]
+style = "bg:peach fg:crust"
+format = "[ $path ]($style)"
+truncation_length = 3
+truncation_symbol = "…/"
 
 [git_branch]
 symbol = " "
-format = "[$symbol$branch]($style) "
-style = "bold purple"
+style = "bg:yellow"
+format = '[[ $symbol$branch ](fg:crust bg:yellow)]($style)'
 
 [git_status]
-format = '([$all_status$ahead_behind]($style) )'
-style = "bold red"
-ahead = "⇡${count}"
-behind = "⇣${count}"
-modified = "!${count}"
-staged = "+${count}"
-untracked = "?${count}"
+style = "bg:yellow"
+format = '[[($all_status$ahead_behind )](fg:crust bg:yellow)]($style)'
+
+[python]
+symbol = " "
+style = "bg:green"
+format = '[[ $symbol($version) ](fg:crust bg:green)]($style)'
+
+[nodejs]
+symbol = " "
+style = "bg:green"
+format = '[[ $symbol($version) ](fg:crust bg:green)]($style)'
+
+[golang]
+symbol = " "
+style = "bg:green"
+format = '[[ $symbol($version) ](fg:crust bg:green)]($style)'
+
+[rust]
+symbol = " "
+style = "bg:green"
+format = '[[ $symbol($version) ](fg:crust bg:green)]($style)'
 
 [kubernetes]
 disabled = false
-format = '[⎈ $context]($style) '
-style = "bold blue"
+style = "bg:sapphire"
+format = '[[ ⎈ $context ](fg:crust bg:sapphire)]($style)'
 
 [aws]
-format = '[ $profile]($style) '
-style = "bold yellow"
-
-[battery]
-format = "[$symbol$percentage]($style) "
-[[battery.display]]
-threshold = 20
-style = "bold red"
-[[battery.display]]
-threshold = 50
-style = "bold yellow"
+style = "bg:sapphire"
+format = '[[  $profile ](fg:crust bg:sapphire)]($style)'
 
 [time]
 disabled = false
-format = "[$time]($style)"
+style = "bg:lavender"
+format = '[[  $time ](fg:crust bg:lavender)]($style)'
 time_format = "%Y-%m-%d %H:%M"
-style = "bold white"
+
+[battery]
+disabled = true
 
 [character]
 disabled = true
 
-[directory]
-disabled = true
-
-[python]
-disabled = true
+[palettes.catppuccin_mocha]
+rosewater = "#f5e0dc"
+flamingo = "#f2cdcd"
+pink = "#f5c2e7"
+mauve = "#cba6f7"
+red = "#f38ba8"
+maroon = "#eba0ac"
+peach = "#fab387"
+yellow = "#f9e2af"
+green = "#a6e3a1"
+teal = "#94e2d5"
+sky = "#89dceb"
+sapphire = "#74c7ec"
+blue = "#89b4fa"
+lavender = "#b4befe"
+text = "#cdd6f4"
+subtext1 = "#bac2de"
+subtext0 = "#a6adc8"
+overlay2 = "#9399b2"
+overlay1 = "#7f849c"
+overlay0 = "#6c7086"
+surface2 = "#585b70"
+surface1 = "#45475a"
+surface0 = "#313244"
+base = "#1e1e2e"
+mantle = "#181825"
+crust = "#11111b"
