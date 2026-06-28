@@ -36,8 +36,7 @@
 (setq inhibit-startup-message t)
 
 ;; setup font
-(set-default-font
- "-Misc-Fixed-Medium-R-Normal--15-140-75-75-C-90-ISO8859-1")
+(set-face-attribute 'default nil :family "JetBrainsMono Nerd Font" :height 140)
 
 ;; display the current time
 (display-time)
