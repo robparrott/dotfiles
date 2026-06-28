@@ -161,7 +161,30 @@ EOF
     fi
 }
 
-# ── 6. Optionally install packages ────────────────────────────────────────────
+# ── 6. Install TPM and tmux plugins ──────────────────────────────────────────
+
+install_tmux_plugins() {
+    local tpm_dir="$HOME/.tmux/plugins/tpm"
+
+    if ! command -v tmux &>/dev/null; then
+        warning "tmux not installed, skipping plugin install"
+        return
+    fi
+
+    if [[ ! -d "$tpm_dir" ]]; then
+        info "Installing TPM..."
+        git clone https://github.com/tmux-plugins/tpm "$tpm_dir"
+    fi
+
+    info "Installing tmux plugins (headless)..."
+    if ! TMUX_PLUGIN_MANAGER_PATH="$HOME/.tmux/plugins" bash "$tpm_dir/bin/install_plugins" 2>&1 | sed 's/^/[tmux-plugins] /'; then
+        warning "Plugin install had errors (non-fatal)"
+    else
+        success "tmux plugins installed"
+    fi
+}
+
+# ── 7. Optionally install packages ────────────────────────────────────────────
 
 maybe_install_packages() {
     local packages_script="$DOTFILES_DIR/packages.sh"
@@ -197,6 +220,7 @@ install_homebrew
 clone_or_update
 link_dotfiles
 platform_setup
+install_tmux_plugins
 maybe_install_packages
 
 echo ""
