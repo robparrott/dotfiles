@@ -2,7 +2,7 @@
 # Configure iTerm2 via a Dynamic Profile — picked up live, no restart needed.
 # Sets a Nerd Font so tmux-powerline glyphs render correctly.
 
-FONT="${1:-JetBrainsMonoNerdFontMono-Regular}"
+FONT="${1:-JetBrainsMonoNFM-Regular}"
 FONT_SIZE="${2:-13}"
 PROFILE_DIR="$HOME/Library/Application Support/iTerm2/DynamicProfiles"
 PROFILE_FILE="$PROFILE_DIR/dotfiles.json"

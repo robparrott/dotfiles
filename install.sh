@@ -131,10 +131,14 @@ link_dotfiles() {
         done
     fi
 
-    # Starship config
-    if [[ -f "$DOTFILES_DIR/config/starship.toml" ]]; then
+    # Link .config/ subdirs into ~/.config/
+    if [[ -d "$DOTFILES_DIR/.config" ]]; then
         mkdir -p "$HOME/.config"
-        backup_and_link "$DOTFILES_DIR/config/starship.toml" "$HOME/.config/starship.toml"
+        for d in "$DOTFILES_DIR/.config/"*/; do
+            local name
+            name="$(basename "$d")"
+            backup_and_link "$d" "$HOME/.config/$name"
+        done
     fi
 }
 
