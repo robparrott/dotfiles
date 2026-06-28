@@ -130,6 +130,12 @@ link_dotfiles() {
             backup_and_link "$script" "$HOME/bin/$name"
         done
     fi
+
+    # Starship config
+    if [[ -f "$DOTFILES_DIR/config/starship.toml" ]]; then
+        mkdir -p "$HOME/.config"
+        backup_and_link "$DOTFILES_DIR/config/starship.toml" "$HOME/.config/starship.toml"
+    fi
 }
 
 # ── 5. Platform-specific setup ────────────────────────────────────────────────

@@ -22,6 +22,7 @@ skip()    { echo "[packages] - (dry-run) would install: $*"; }
 BREW_FORMULAE=(
     # Shell & terminal
     tmux
+    starship
     ripgrep
     gh
     whois
