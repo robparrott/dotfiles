@@ -7,7 +7,7 @@ BAR_BG="colour235"
 ACTIVE_BG="colour31"
 INACTIVE_BG="colour24"
 FG="colour255"
-WEDGE=""
+WEDGE=""
 
 prev_bg=""
 output=""
