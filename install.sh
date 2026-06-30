@@ -3,6 +3,8 @@ set -euo pipefail
 
 REPO="https://github.com/robparrott/dotfiles.git"
 DOTFILES_DIR="$HOME/.dotfiles"
+DRY_RUN=false
+[[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
 
 # Files to symlink into $HOME
 DOTFILES=(
@@ -219,16 +221,29 @@ maybe_install_packages() {
     fi
 
     echo ""
-    if ask "Install packages via packages.sh?"; then
-        info "Running packages.sh..."
-        if ! bash "$packages_script"; then
-            error "packages.sh encountered errors. Some packages may not have installed."
-        else
-            success "Package installation complete"
-        fi
+    echo "  What would you like to install?"
+    echo "  1) CLI only    — terminal tools, suitable for headless servers"
+    echo "  2) Desktop only — GUI apps and fonts"
+    echo "  3) All          — CLI + desktop"
+    echo "  4) Skip"
+    echo ""
+    local choice mode_flag=""
+    read -r -p "  Choice [1/2/3/4] (default: 3): " choice
+    case "${choice:-3}" in
+        1) mode_flag="--cli"     ; info "Installing CLI packages..." ;;
+        2) mode_flag="--desktop" ; info "Installing desktop packages..." ;;
+        3) mode_flag="--all"     ; info "Installing all packages..." ;;
+        4) info "Skipping package installation. Run later: bash ~/.dotfiles/packages.sh"; return ;;
+        *) mode_flag="--all"     ; info "Installing all packages..." ;;
+    esac
+
+    local dry_flag=""
+    $DRY_RUN && dry_flag="--dry-run"
+
+    if ! bash "$packages_script" "$mode_flag" ${dry_flag:+"$dry_flag"}; then
+        error "packages.sh encountered errors. Some packages may not have installed."
     else
-        info "Skipping package installation. You can run it later:"
-        info "  bash ~/.dotfiles/packages.sh"
+        success "Package installation complete"
     fi
 }
 
@@ -240,11 +255,15 @@ echo "  repo: $REPO"
 echo "  destination: $DOTFILES_DIR"
 echo ""
 
-install_homebrew
-clone_or_update
-link_dotfiles
-platform_setup
-install_tmux_plugins
+if $DRY_RUN; then
+    info "(dry-run) skipping git update, symlinking, and plugin steps"
+else
+    install_homebrew
+    clone_or_update
+    link_dotfiles
+    platform_setup
+    install_tmux_plugins
+fi
 maybe_install_packages
 
 echo ""

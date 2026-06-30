@@ -5,12 +5,25 @@ set -uo pipefail
 # packages.sh — Install common packages across macOS and Linux
 #
 # Usage:
-#   ./packages.sh           # install everything for this platform
-#   ./packages.sh --dry-run # show what would be installed
+#   ./packages.sh [--cli|--desktop|--all] [--dry-run]
+#
+#   --cli       CLI tools only (safe for headless/servers)
+#   --desktop   GUI apps and fonts only
+#   --all       Everything (default when run interactively)
+#   --dry-run   Print what would be installed without installing
 # =============================================================================
 
 DRY_RUN=false
-[[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
+MODE=""
+
+for arg in "${@:-}"; do
+    case "$arg" in
+        --dry-run) DRY_RUN=true ;;
+        --cli)     MODE=cli ;;
+        --desktop) MODE=desktop ;;
+        --all)     MODE=all ;;
+    esac
+done
 
 info()    { echo "[packages] $*"; }
 success() { echo "[packages] ✓ $*"; }
@@ -18,11 +31,40 @@ warning() { echo "[packages] ! $*"; }
 error()   { echo "[packages] ✗ $*" >&2; }
 skip()    { echo "[packages] - (dry-run) would install: $*"; }
 
+ask() {
+    local prompt="$1" default="${2:-y}" yn
+    if [[ "$default" == "y" ]]; then
+        read -r -p "[packages] $prompt [Y/n] " yn
+        [[ "${yn:-y}" =~ ^[Yy]$ ]]
+    else
+        read -r -p "[packages] $prompt [y/N] " yn
+        [[ "${yn:-n}" =~ ^[Yy]$ ]]
+    fi
+}
+
+ask_mode() {
+    echo ""
+    echo "[packages] What would you like to install?"
+    echo "  1) CLI only    — terminal tools, suitable for headless servers"
+    echo "  2) Desktop only — GUI apps and fonts"
+    echo "  3) All          — CLI + desktop"
+    echo ""
+    local choice
+    read -r -p "[packages] Choice [1/2/3] (default: 3): " choice
+    case "${choice:-3}" in
+        1) MODE=cli ;;
+        2) MODE=desktop ;;
+        *) MODE=all ;;
+    esac
+    info "Installing: $MODE"
+    echo ""
+}
+
 FAILED=()
 
 # ── macOS / Homebrew ──────────────────────────────────────────────────────────
 
-BREW_FORMULAE=(
+BREW_CLI=(
     # Shell & terminal
     tmux
     starship
@@ -42,14 +84,14 @@ BREW_FORMULAE=(
     openssl@3
     tailscale
 
-    # Media (remove if not needed)
+    # Media
     ffmpeg
 
     # AI / local models
     ollama
 )
 
-BREW_CASKS=(
+BREW_DESKTOP=(
     # Fonts (needed for tmux-powerline glyphs)
     font-jetbrains-mono-nerd-font
 
@@ -59,6 +101,7 @@ BREW_CASKS=(
     google-drive
     iterm2
     zed
+    zoom
 
     # Browsers
     google-chrome
@@ -73,108 +116,91 @@ BREW_CASKS=(
     docker-desktop
 )
 
-install_brew_packages() {
-    # Ensure Homebrew is installed
-    if ! command -v brew &>/dev/null; then
-        if $DRY_RUN; then
-            skip "Homebrew (not installed)"
-            return
+brew_install() {
+    local pkg="$1" cask="${2:-}"
+    if $DRY_RUN; then
+        skip "$pkg${cask:+ (cask)}"
+    elif [[ -n "$cask" ]] && brew list --cask "$pkg" &>/dev/null; then
+        info "$pkg already installed"
+    elif [[ -z "$cask" ]] && brew list --formula "$pkg" &>/dev/null; then
+        info "$pkg already installed"
+    else
+        info "Installing $pkg..."
+        if brew install ${cask:+--cask} "$pkg"; then
+            success "$pkg"
+        else
+            error "$pkg failed — continuing"
+            FAILED+=("$pkg")
         fi
+    fi
+}
+
+install_brew_packages() {
+    if ! command -v brew &>/dev/null; then
+        if $DRY_RUN; then skip "Homebrew (not installed)"; return; fi
         info "Installing Homebrew..."
         /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         eval "$(/opt/homebrew/bin/brew shellenv bash)" 2>/dev/null || \
         eval "$(/usr/local/bin/brew shellenv bash)"    2>/dev/null || true
     fi
 
-    info "Updating Homebrew..."
     $DRY_RUN || brew update -q
 
-    info "Installing formulae..."
-    for pkg in "${BREW_FORMULAE[@]}"; do
-        if $DRY_RUN; then
-            skip "$pkg"
-        elif brew list --formula "$pkg" &>/dev/null; then
-            info "$pkg already installed"
-        else
-            info "Installing $pkg..."
-            if brew install "$pkg"; then
-                success "$pkg"
-            else
-                error "$pkg failed — continuing"
-                FAILED+=("$pkg")
-            fi
-        fi
-    done
+    if [[ "$MODE" == "cli" || "$MODE" == "all" ]]; then
+        info "Installing CLI formulae..."
+        for pkg in "${BREW_CLI[@]}"; do brew_install "$pkg"; done
+    fi
 
-    info "Installing casks..."
-    for cask in "${BREW_CASKS[@]}"; do
-        if $DRY_RUN; then
-            skip "$cask (cask)"
-        elif brew list --cask "$cask" &>/dev/null; then
-            info "$cask already installed"
-        else
-            info "Installing $cask..."
-            if brew install --cask "$cask"; then
-                success "$cask"
-            else
-                error "$cask failed — continuing"
-                FAILED+=("$cask")
-            fi
-        fi
-    done
+    if [[ "$MODE" == "desktop" || "$MODE" == "all" ]]; then
+        info "Installing desktop casks..."
+        for pkg in "${BREW_DESKTOP[@]}"; do brew_install "$pkg" cask; done
+    fi
 }
 
 # ── Linux / apt (Debian, Ubuntu) ──────────────────────────────────────────────
 
-APT_PACKAGES=(
-    # Shell & terminal
+APT_CLI=(
     tmux
     ripgrep
     curl
     wget
     git
-
-    # Editors
     emacs
-
-    # Languages
     python3
     python3-pip
-
-    # Security & networking
     ca-certificates
     openssl
 )
 
-install_apt_packages() {
-    if ! command -v apt-get &>/dev/null; then
-        warning "apt-get not found, skipping"
-        return
-    fi
+APT_DESKTOP=(
+    # Add Linux desktop packages here as needed
+)
 
-    info "Updating apt..."
+install_apt_packages() {
+    if ! command -v apt-get &>/dev/null; then warning "apt-get not found, skipping"; return; fi
+
     $DRY_RUN || sudo apt-get update -q
 
-    for pkg in "${APT_PACKAGES[@]}"; do
+    local pkgs=()
+    [[ "$MODE" == "cli"     || "$MODE" == "all" ]] && pkgs+=("${APT_CLI[@]}")
+    [[ "$MODE" == "desktop" || "$MODE" == "all" ]] && [[ ${#APT_DESKTOP[@]} -gt 0 ]] && pkgs+=("${APT_DESKTOP[@]}")
+
+    for pkg in "${pkgs[@]}"; do
         if $DRY_RUN; then
             skip "$pkg"
         elif dpkg -s "$pkg" &>/dev/null 2>&1; then
             info "$pkg already installed"
         else
             info "Installing $pkg..."
-            if sudo apt-get install -y "$pkg"; then
-                success "$pkg"
-            else
-                error "$pkg failed — continuing"
-                FAILED+=("$pkg")
-            fi
+            if sudo apt-get install -y "$pkg"; then success "$pkg"
+            else error "$pkg failed — continuing"; FAILED+=("$pkg"); fi
         fi
     done
 }
 
 # ── Linux / dnf (Fedora, RHEL) ───────────────────────────────────────────────
 
-DNF_PACKAGES=(
+DNF_CLI=(
     tmux
     ripgrep
     curl
@@ -187,28 +213,33 @@ DNF_PACKAGES=(
     python3-pip
 )
 
-install_dnf_packages() {
-    if ! command -v dnf &>/dev/null; then
-        warning "dnf not found, skipping"
-        return
-    fi
+DNF_DESKTOP=(
+    # Add Linux desktop packages here as needed
+)
 
-    for pkg in "${DNF_PACKAGES[@]}"; do
+install_dnf_packages() {
+    if ! command -v dnf &>/dev/null; then warning "dnf not found, skipping"; return; fi
+
+    local pkgs=()
+    [[ "$MODE" == "cli"     || "$MODE" == "all" ]] && pkgs+=("${DNF_CLI[@]}")
+    [[ "$MODE" == "desktop" || "$MODE" == "all" ]] && [[ ${#DNF_DESKTOP[@]} -gt 0 ]] && pkgs+=("${DNF_DESKTOP[@]}")
+
+    for pkg in "${pkgs[@]}"; do
         if $DRY_RUN; then
             skip "$pkg"
         elif rpm -q "$pkg" &>/dev/null 2>&1; then
             info "$pkg already installed"
         else
             info "Installing $pkg..."
-            if sudo dnf install -y "$pkg"; then
-                success "$pkg"
-            else
-                error "$pkg failed — continuing"
-                FAILED+=("$pkg")
-            fi
+            if sudo dnf install -y "$pkg"; then success "$pkg"
+            else error "$pkg failed — continuing"; FAILED+=("$pkg"); fi
         fi
     done
 }
+
+# ── Mode selection ────────────────────────────────────────────────────────────
+
+[[ -z "$MODE" ]] && ask_mode
 
 # ── Dispatch ──────────────────────────────────────────────────────────────────
 
@@ -238,9 +269,7 @@ esac
 
 if [[ ${#FAILED[@]} -gt 0 ]]; then
     error "The following packages failed to install:"
-    for pkg in "${FAILED[@]}"; do
-        error "  - $pkg"
-    done
+    for pkg in "${FAILED[@]}"; do error "  - $pkg"; done
     exit 1
 fi
 
