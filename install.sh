@@ -25,15 +25,17 @@ warning() { echo "[dotfiles] ! $*"; }
 error()   { echo "[dotfiles] ✗ $*" >&2; }
 
 # Ask a yes/no question; return 0 for yes, 1 for no
+# Reads from /dev/tty so prompts work even when stdin is a curl pipe.
 ask() {
     local prompt="$1"
     local default="${2:-y}"   # y or n
-    local yn
+    local yn input=/dev/tty
+    ( : </dev/tty ) 2>/dev/null || input=/dev/stdin
     if [[ "$default" == "y" ]]; then
-        read -r -p "[dotfiles] $prompt [Y/n] " yn
+        read -r -p "[dotfiles] $prompt [Y/n] " yn <"$input"
         [[ "${yn:-y}" =~ ^[Yy]$ ]]
     else
-        read -r -p "[dotfiles] $prompt [y/N] " yn
+        read -r -p "[dotfiles] $prompt [y/N] " yn <"$input"
         [[ "${yn:-n}" =~ ^[Yy]$ ]]
     fi
 }
@@ -228,7 +230,8 @@ maybe_install_packages() {
     echo "  4) Skip"
     echo ""
     local choice mode_flag=""
-    read -r -p "  Choice [1/2/3/4] (default: 3): " choice
+    local input=/dev/tty; ( : </dev/tty ) 2>/dev/null || input=/dev/stdin
+    read -r -p "  Choice [1/2/3/4] (default: 3): " choice <"$input"
     case "${choice:-3}" in
         1) mode_flag="--cli"     ; info "Installing CLI packages..." ;;
         2) mode_flag="--desktop" ; info "Installing desktop packages..." ;;

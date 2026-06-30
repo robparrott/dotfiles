@@ -32,12 +32,13 @@ error()   { echo "[packages] ✗ $*" >&2; }
 skip()    { echo "[packages] - (dry-run) would install: $*"; }
 
 ask() {
-    local prompt="$1" default="${2:-y}" yn
+    local prompt="$1" default="${2:-y}" yn input=/dev/tty
+    ( : </dev/tty ) 2>/dev/null || input=/dev/stdin
     if [[ "$default" == "y" ]]; then
-        read -r -p "[packages] $prompt [Y/n] " yn
+        read -r -p "[packages] $prompt [Y/n] " yn <"$input"
         [[ "${yn:-y}" =~ ^[Yy]$ ]]
     else
-        read -r -p "[packages] $prompt [y/N] " yn
+        read -r -p "[packages] $prompt [y/N] " yn <"$input"
         [[ "${yn:-n}" =~ ^[Yy]$ ]]
     fi
 }
@@ -50,7 +51,8 @@ ask_mode() {
     echo "  3) All          — CLI + desktop"
     echo ""
     local choice
-    read -r -p "[packages] Choice [1/2/3] (default: 3): " choice
+    local input=/dev/tty; ( : </dev/tty ) 2>/dev/null || input=/dev/stdin
+    read -r -p "[packages] Choice [1/2/3] (default: 3): " choice <"$input"
     case "${choice:-3}" in
         1) MODE=cli ;;
         2) MODE=desktop ;;
