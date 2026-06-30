@@ -99,20 +99,20 @@ install_homebrew() {
 clone_or_update() {
     if [[ -d "$DOTFILES_DIR/.git" ]]; then
         info "Updating existing dotfiles repo at $DOTFILES_DIR"
+        if ! git -C "$DOTFILES_DIR" fetch origin; then
+            error "git fetch failed — check network and remote."
+            exit 1
+        fi
         local local_diff
-        local_diff=$(git -C "$DOTFILES_DIR" diff HEAD)
+        local_diff=$(git -C "$DOTFILES_DIR" diff origin/master)
         if [[ -n "$local_diff" ]]; then
-            warning "Local modifications exist in $DOTFILES_DIR that will be overwritten:"
+            warning "Local files differ from origin/master and will be overwritten:"
             echo "$local_diff"
             echo ""
             if ! ask "Proceed and overwrite local changes?"; then
                 info "Skipping update — repo left as-is."
                 return
             fi
-        fi
-        if ! git -C "$DOTFILES_DIR" fetch origin; then
-            error "git fetch failed — check network and remote."
-            exit 1
         fi
         git -C "$DOTFILES_DIR" reset --hard origin/master
         success "Repo updated to origin/master"
