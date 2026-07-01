@@ -44,3 +44,16 @@ if [[ -n "$SSH_CONNECTION" ]] && [[ -z "$TMUX" ]]; then
         tmux attach-session -t main 2>/dev/null || tmux new-session -s main
     fi
 fi
+
+# =============================================================================
+# TMUX: track pane cwd (needed by tmux-powerline's pwd/vcs_branch segments)
+# =============================================================================
+
+if [[ -n "$TMUX" ]]; then
+    _tmux_update_cwd() {
+        tmux setenv "TMUXPWD_$(tmux display -p '#D' | tr -d %)" "$PWD"
+    }
+    _tmux_update_cwd
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd _tmux_update_cwd
+fi

@@ -41,7 +41,8 @@ fi
 if [ -z $TMUX_POWERLINE_RIGHT_STATUS_SEGMENTS ]; then
 	TMUX_POWERLINE_RIGHT_STATUS_SEGMENTS=(
 		#"earthquake 3 0" \
-		"pwd 89 211" \
+		#"pwd 89 211" \
+		"vcs_branch 29 88" \
 		"mailcount 9 234" \
 #		"now_playing 234 37" \
 		#"cpu 240 136" \
